@@ -2,10 +2,13 @@
 
 > A retrieval system that knows when it doesn't know.
 
+<img width="2720" height="2240" alt="gated_rag_architecture_flow" src="https://github.com/user-attachments/assets/be6f6c5d-d9db-4b13-8a95-b52e2d192308" />
+
 Most RAG systems hallucinate because they never ask themselves whether they
 actually found the answer. **Gated RAG** adds a *confidence gate*: before it
 lets the LLM answer, it checks whether the retrieved context is relevant
 enough. If it isn't, the system refuses instead of making something up.
+
 
 Runs **fully local** with [Ollama](https://ollama.com) — no API keys, no data
 leaves your machine.
