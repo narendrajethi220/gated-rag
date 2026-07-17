@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Cached embeddings (if we save them later)
+*.npy
