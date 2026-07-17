@@ -9,6 +9,7 @@ from knowledge_base import DOCUMENTS
 
 EMBED_MODEL = "nomic-embed-text"
 
+
 def embed(text):
     res=ollama.embeddings(model=EMBED_MODEL, prompt=text)
     return np.array(res["embedding"])
@@ -37,4 +38,5 @@ def retrieve(question,store,k:int=3):
     scored.sort(key=lambda r:r["score"],reverse=True) # storing all chunks from most to least similar
     
     return scored[:k]
+
 

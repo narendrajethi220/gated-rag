@@ -23,6 +23,25 @@ The gate is driven by **cosine similarity**. If the best retrieved chunk
 scores above a threshold, we trust the context and generate an answer.
 If not, we say "I don't have enough information."
 
+See `docs/architecture.md` for the full diagram and data flow.
+
+---
+
+## Why it works — evaluation
+
+Across a labeled test set of answerable vs. unanswerable questions, the two
+groups separate cleanly by similarity score:
+
+| Group | Score range |
+|---|---|
+| Answerable (in knowledge base) | 0.650 – 0.833 |
+| Unanswerable (not in knowledge base) | 0.435 – 0.476 |
+
+That's a **0.17 gap** with no overlap. The threshold lives inside that gap.
+The data suggested ≈0.563; the project uses **0.60** to bias slightly toward
+*safe refusals* — a false "I don't know" is cheaper than a confident wrong
+answer.
+
 ---
 
 ## Tech stack
@@ -31,7 +50,7 @@ If not, we say "I don't have enough information."
 |---|---|
 | LLM | `llama3.2:3b` (via Ollama) |
 | Embeddings | `nomic-embed-text` (via Ollama) |
-| Math / retrieval | `numpy` (written by hand, no vector-DB library) |
+| Math / retrieval | `numpy` (hand-written, no vector-DB library) |
 
 Retrieval and the gate are hand-written on purpose, so every mechanism is
 visible instead of hidden inside a framework.
@@ -49,9 +68,11 @@ gated-rag/
 │   ├── knowledge_base.py  ← the documents (our "knowledge")
 │   ├── vector_store.py    ← embedding + cosine similarity + retrieval
 │   ├── gate.py            ← the confidence gate logic
+│   ├── generate.py        ← LLM answer + refusal branches
+│   ├── evaluate.py        ← threshold tuning: scores answerable vs not
 │   └── main.py            ← ties it all together, run this
-├── data/                  ← (room for real documents later)
-└── docs/                  ← notes, architecture diagram, step-by-step READMEs
+├── data/                  ← room for real documents later
+└── docs/                  ← architecture diagram + step-by-step build notes
 ```
 
 ---
@@ -66,13 +87,28 @@ ollama pull nomic-embed-text
 # 2. Install Python deps
 pip install -r requirements.txt
 
-# 3. Run
+# 3. Run the interactive assistant
 python src/main.py
+
+# 4. (Optional) reproduce the threshold evaluation
+python src/evaluate.py
 ```
 
 ---
 
-## Status
+## Try these
+
+- `How much is the Pro plan?` → answers from context
+- `Where are your data centers?` → answers from context
+- `What is your refund policy?` → **refuses** (not in the knowledge base)
+- `What's the weather today?` → **refuses** (off-topic)
+
+The last two are the point: it declines instead of inventing an answer.
+
+---
+
+## How it's built
 
 Built step by step as a learning project. See `docs/` for the reasoning
-behind each part.
+behind each part — concept, embeddings, retrieval, the gate, generation, and
+threshold tuning.

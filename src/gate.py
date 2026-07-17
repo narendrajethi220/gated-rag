@@ -15,6 +15,8 @@ def check_confidence(retrieved,threshold:float=CONFIDENCE_THRESHOLD):
         "threshold":threshold
     }
 
+# for testing purpose
+
 if __name__ == "__main__": # safely importing fucntion without accidently triggering the script behaviour
     from vector_store import vec_store,retrieve
 
